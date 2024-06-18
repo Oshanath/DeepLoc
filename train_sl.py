@@ -9,6 +9,7 @@ import argparse
 import subprocess
 import os
 import warnings
+import time
 
 warnings.filterwarnings(
     "ignore", ".*Trying to infer the `batch_size` from an ambiguous collection.*"
@@ -77,11 +78,18 @@ if __name__ == "__main__":
         embed_len=model_attrs.embed_len
     )
     print("Training subcellular localization models")
+    start = time.time()
     for i in range(0, 5):
         print(f"Training model {i+1} / 5")
         if not os.path.exists(os.path.join(model_attrs.save_path, f"{i}_1Layer.ckpt")):
             train_model(model_attrs, datahandler, i)
-    print("Finished training subcellular localization models")
+    end = time.time()
+    print("Finished training subcellular localization models.")
+
+    file = open("time.txt", "w")
+    file.write(f"Training time: {end-start}")
+    file.close()
+
 
     print("Using trained models to generate outputs for signal prediction training")
     generate_sl_outputs(model_attrs=model_attrs, datahandler=datahandler)
