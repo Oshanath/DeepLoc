@@ -77,6 +77,9 @@ if __name__ == "__main__":
         embedding_file=model_attrs.embedding_file,
         embed_len=model_attrs.embed_len
     )
+
+    torch.set_float32_matmul_precision('medium')
+
     print("Training subcellular localization models")
     start = time.time()
     for i in range(0, 5):
