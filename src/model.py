@@ -81,12 +81,12 @@ class BaseModel(pl.LightningModule):
     def forward(self, embedding, lens, non_mask):
         x = self.initial_ln(embedding)
         x = self.lin1(x)
-        x = self.droput1(x)
+        x = self.dropout1(x)
         x = self.relu1(x)
         x = self.lin2(x)
         x = self.dropout2(x)
         x = self.relu2(x)
-        x_pool, x_attns = self.attn_head(x, non_mask, lens)
+        x_pool, x_attns = self.attn_head1(x, non_mask, lens)
         x_pred = self.clf_head(x_pool)
         # print(x_pred, x_attns)
         return x_pred, x_attns
@@ -94,12 +94,12 @@ class BaseModel(pl.LightningModule):
     def predict(self, embedding, lens, non_mask):
         x = self.initial_ln(embedding)
         x = self.lin1(x)
-        x = self.droput1(x)
+        x = self.dropout1(x)
         x = self.relu1(x)
         x = self.lin2(x)
         x = self.dropout2(x)
         x = self.relu2(x)
-        x_pool, x_attns = self.attn_head(x, non_mask, lens)
+        x_pool, x_attns = self.attn_head1(x, non_mask, lens)
         x_pred = self.clf_head(x_pool)
         # print(x_pred, x_attns)
         return x_pred, x_attns, x_pool

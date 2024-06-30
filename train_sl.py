@@ -35,7 +35,7 @@ def train_model(
 
     # Initialize trainer
     trainer = pl.Trainer(
-        max_epochs=1,
+        max_epochs=10,
         default_root_dir=model_attrs.save_path + f"/{outer_i}_1Layer",
         check_val_every_n_epoch=1,
         callbacks=[checkpoint_callback, early_stopping_callback],
