@@ -68,9 +68,9 @@ class BaseModel(pl.LightningModule):
 
         self.initial_ln = nn.LayerNorm(embed_dim)
         self.lin1 = nn.Linear(embed_dim, 512)
-        self.relu1 = nn.Dropout(0.4)
+        # self.relu1 = nn.Dropout(0.4)
         self.lin2 = nn.Linear(512, 64)
-        self.relu2 = nn.Dropout(0.1)
+        # self.relu2 = nn.Dropout(0.1)
         self.attn_head1 = AttentionHead(64, 1)
         self.clf_head = nn.Linear(64, 11)
         self.kld = nn.KLDivLoss(reduction="batchmean")
@@ -79,9 +79,9 @@ class BaseModel(pl.LightningModule):
     def forward(self, embedding, lens, non_mask):
         x = self.initial_ln(embedding)
         x = self.lin1(x)
-        x = self.relu1(x)
+        # x = self.relu1(x)
         x = self.lin2(x)
-        x = self.relu2(x)
+        # x = self.relu2(x)
         x_pool, x_attns = self.attn_head1(x, non_mask, lens)
         x_pred = self.clf_head(x_pool)
         # print(x_pred, x_attns)
@@ -90,9 +90,9 @@ class BaseModel(pl.LightningModule):
     def predict(self, embedding, lens, non_mask):
         x = self.initial_ln(embedding)
         x = self.lin1(x)
-        x = self.relu1(x)
+        # x = self.relu1(x)
         x = self.lin2(x)
-        x = self.relu2(x)
+        # x = self.relu2(x)
         x_pool, x_attns = self.attn_head1(x, non_mask, lens)
         x_pred = self.clf_head(x_pool)
         # print(x_pred, x_attns)
@@ -131,7 +131,7 @@ class BaseModel(pl.LightningModule):
 
     def configure_optimizers(self):
         grouped_parameters = [{"params": [p for n, p in self.named_parameters()]}]
-        optimizer = torch.optim.AdamW(grouped_parameters, lr=self.lr, weight_decay=1e-3)
+        optimizer = torch.optim.AdamW(grouped_parameters, lr=self.lr)
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode="min", factor=0.1, patience=1, min_lr=1e-5
         )
