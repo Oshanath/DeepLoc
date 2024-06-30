@@ -81,7 +81,7 @@ if __name__ == "__main__":
     )
     print("Training subcellular localization models")
     start = time.time()
-    for i in range(0, 5):
+    for i in range(0, 1):
         print(f"Training model {i+1} / 5")
         if not os.path.exists(os.path.join(model_attrs.save_path, f"{i}_1Layer.ckpt")):
             train_model(model_attrs, datahandler, i)
