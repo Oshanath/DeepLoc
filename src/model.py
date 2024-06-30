@@ -68,11 +68,12 @@ class BaseModel(pl.LightningModule):
 
         self.initial_ln = nn.LayerNorm(embed_dim)
         self.lin1 = nn.Linear(embed_dim, 512)
-        self.attn_head1 = AttentionHead(512, 1)
-        # self.dropout = nn.Dropout(0.4)
+        self.dropout = nn.Dropout(0.4)
+        self.relu1 = nn.ReLU()
         self.lin2 = nn.Linear(512, 64)
-        # self.dropout = nn.Dropout(0.1)
-        self.attn_head2 = AttentionHead(64, 1)
+        self.dropout = nn.Dropout(0.1)
+        self.relu2 = nn.ReLU()
+        self.attn_head1 = AttentionHead(64, 1)
         self.clf_head = nn.Linear(64, 11)
         self.kld = nn.KLDivLoss(reduction="batchmean")
         self.lr = 1e-3
@@ -80,26 +81,28 @@ class BaseModel(pl.LightningModule):
     def forward(self, embedding, lens, non_mask):
         x = self.initial_ln(embedding)
         x = self.lin1(x)
-        x_pool1, x_attns1 = self.attn_head1(x, non_mask, lens)
-        # x = self.droput1(x)
-        x = self.lin2(x_pool1)
-        # x = self.relu2(x)
-        x_pool2, x_attns2 = self.attn_head2(x, non_mask, lens)
-        x_pred = self.clf_head(x_pool2)
+        x = self.droput1(x)
+        x = self.relu1(x)
+        x = self.lin2(x)
+        x = self.dropout(x)
+        x = self.relu2(x)
+        x_pool, x_attns = self.attn_head(x, non_mask, lens)
+        x_pred = self.clf_head(x_pool)
         # print(x_pred, x_attns)
-        return x_pred, x_attns2
+        return x_pred, x_attns
 
     def predict(self, embedding, lens, non_mask):
         x = self.initial_ln(embedding)
         x = self.lin1(x)
-        x_pool1, x_attns1 = self.attn_head1(x, non_mask, lens)
-        # x = self.droput1(x)
-        x = self.lin2(x_pool1)
-        # x = self.relu2(x)
-        x_pool2, x_attns2 = self.attn_head2(x, non_mask, lens)
-        x_pred = self.clf_head(x_pool2)
+        x = self.droput1(x)
+        x = self.relu1(x)
+        x = self.lin2(x)
+        x = self.dropout(x)
+        x = self.relu2(x)
+        x_pool, x_attns = self.attn_head(x, non_mask, lens)
+        x_pred = self.clf_head(x_pool)
         # print(x_pred, x_attns)
-        return x_pred, x_attns2, x_pool2
+        return x_pred, x_attns, x_pool
 
     def attn_reg_loss(self, y_true, y_attn, y_tags, lengths, n):
         loss = 0
@@ -134,7 +137,7 @@ class BaseModel(pl.LightningModule):
 
     def configure_optimizers(self):
         grouped_parameters = [{"params": [p for n, p in self.named_parameters()]}]
-        optimizer = torch.optim.AdamW(grouped_parameters, lr=self.lr)
+        optimizer = torch.optim.AdamW(grouped_parameters, lr=self.lr, weight_decay=1e-4)
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode="min", factor=0.1, patience=1, min_lr=1e-5
         )
