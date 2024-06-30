@@ -137,7 +137,7 @@ class BaseModel(pl.LightningModule):
 
     def configure_optimizers(self):
         grouped_parameters = [{"params": [p for n, p in self.named_parameters()]}]
-        optimizer = torch.optim.AdamW(grouped_parameters, lr=self.lr)
+        optimizer = torch.optim.AdamW(grouped_parameters, lr=self.lr, weight_decay=1e-4)
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode="min", factor=0.1, patience=1, min_lr=1e-5
         )
