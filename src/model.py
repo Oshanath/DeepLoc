@@ -88,7 +88,6 @@ class BaseModel(pl.LightningModule):
         x = self.relu2(x)
         x_pool, x_attns = self.attn_head1(x, non_mask, lens)
         x_pred = self.clf_head(x_pool)
-        # print(x_pred, x_attns)
         return x_pred, x_attns
 
     def predict(self, embedding, lens, non_mask):
@@ -101,7 +100,6 @@ class BaseModel(pl.LightningModule):
         x = self.relu2(x)
         x_pool, x_attns = self.attn_head1(x, non_mask, lens)
         x_pred = self.clf_head(x_pool)
-        # print(x_pred, x_attns)
         return x_pred, x_attns, x_pool
 
     def attn_reg_loss(self, y_true, y_attn, y_tags, lengths, n):

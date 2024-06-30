@@ -162,7 +162,7 @@ def calculate_sl_metrics(
     print(np.array(list(threshold_dict.values())).mean(0))
     metrics_dict_list = {}
     full_data_df = []
-    for outer_i in range(1):
+    for outer_i in range(5):
         data_df = datahandler.get_partition(outer_i)
         output_df = pd.read_pickle(
             os.path.join(model_attrs.outputs_save_path, f"{outer_i}_{inner_i}.pkl")
